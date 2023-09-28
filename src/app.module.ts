@@ -8,9 +8,11 @@ import appConfig from './app.config';
 import databaseConfig from 'database.config';
 
 import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 import { HttpModule } from '@nestjs/axios';
 
 import { AuthController } from './modules/auth/auth.controller';
+import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -25,8 +27,9 @@ import { AuthController } from './modules/auth/auth.controller';
   }),
   AuthModule,
   HttpModule,
+  UserModule,
 ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, UserController],
   providers: [AppService],
 })
 export class AppModule {}
