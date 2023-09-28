@@ -11,6 +11,7 @@ import { RegisterDto } from "./dto/register.dto";
 
 import { crypt, decrypt } from "src/utility/auth-util";
 import { LoginDto } from "./dto/login.dto";
+import { RefreshTokenDto } from "./dto/refresh.dto";
 
 @Injectable()
 export class AuthService{
@@ -114,6 +115,51 @@ export class AuthService{
                 result: null,
                 error: err,
                 message: 'Failed to validate user',
+            }
+        }
+    }
+
+    async refresh(payload: RefreshTokenDto){
+        try{
+            const decoded = this.jwtService.verify(payload.refreshToken);
+            const user = await this.userRepository.findOne({
+                where: {
+                    user_id: decoded.user_id,
+                }
+            })
+            if(!user){
+                return{
+                    error: true,
+                    message: 'User not found',
+                }
+            }
+            const newAccessToken = this.jwtService.sign(
+                {
+                    user_id: user.user_id,
+                    iss: 'forum',
+                },
+                {
+                    expiresIn: process.env.JWT_EXPIRATION_TIME,
+                }
+            );
+            const newRefreshToken = this.jwtService.sign(
+                {
+                    user_id: user.user_id,
+                    iss: 'forum',
+                },
+                {
+                    expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME,
+                }
+            )
+            return{
+                result: {accessToken: newAccessToken, refreshToken: newRefreshToken},
+                success: true,
+            }
+        }catch(err){
+            return{
+                result: null,
+                error: err,
+                message: 'Failed to refresh token',
             }
 
         }
