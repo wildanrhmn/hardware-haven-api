@@ -7,11 +7,13 @@ import { User } from "src/models/forum_user/user.entity";
 
 import {JwtService} from '@nestjs/jwt';
 
-import { RegisterDto } from "./dto/register.dto";
-
 import { crypt, decrypt } from "src/utility/auth-util";
+
+import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh.dto";
+import { ChangePasswordDto } from "./dto/change_password.dto";
+import { TokenPayload } from "src/types/token-payload";
 
 @Injectable()
 export class AuthService{
@@ -162,6 +164,37 @@ export class AuthService{
                 message: 'Failed to refresh token',
             }
 
+        }
+    }
+
+    async changePassword(payload: ChangePasswordDto, user: TokenPayload){
+        try{
+            const userDetail = await this.userRepository.findOne({
+                where: {
+                    user_id : user.user_id
+                }
+            })
+
+            if(decrypt(userDetail.password) === payload.newPassword){
+                return{
+                    error: true,
+                    message: 'New password cannot be same as old password',
+                }
+            }
+            await this.userRepository.update({
+                password: crypt(payload.newPassword),
+                updated_at: new Date(),
+            }, {where: { user_id: user.user_id }});
+
+            return{
+                result: null,
+                message: 'Successfully change password!',
+            }
+        }catch(err){
+            return{
+                error: true,
+                message: 'Failed to change password',
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
 import { AuthService } from "./auth.service";
 import {Body, Controller, Request, Get, Post, HttpException, UseGuards} from '@nestjs/common';
-import { ApiTags } from "@nestjs/swagger/dist/decorators";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger/dist/decorators";
 
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh.dto";
+import { ChangePasswordDto } from "./dto/change_password.dto";
+import { JwtAuthGuard } from "./jwt-auth.guard";
 
 @ApiTags('auth')
 @Controller('auth')
@@ -38,5 +40,18 @@ export class AuthController{
             throw new HttpException(result.message, 400);
           }
           return result;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Post('/change-password')
+    async changePassword(@Request() req: any, @Body() payload: ChangePasswordDto){
+        const user = req.user;
+        const result = await this.authService.changePassword(payload, user);
+
+        if (result.error) {
+            throw new HttpException(result.message, 400);
+        }
+        return result;
     }
 }
