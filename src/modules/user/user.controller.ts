@@ -1,4 +1,4 @@
-import {Controller, Request, Get, HttpException, UseGuards} from '@nestjs/common';
+import {Controller, Request, Get, HttpException, UseGuards, Post} from '@nestjs/common';
 import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -26,6 +26,19 @@ export class UserController{
     
     if (result.error) {
         throw new HttpException(result.message, 400);
+      }
+      return result;
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @ApiBearerAuth('Authorization')
+   @Post('/verify-email')
+   async userVerifyEmail(@Request() req: any){
+      const user = req.user;
+      const result = await this.userService.verifyEmail(user);
+
+      if (result.error) {
+          throw new HttpException(result.message, 400);
       }
       return result;
    }

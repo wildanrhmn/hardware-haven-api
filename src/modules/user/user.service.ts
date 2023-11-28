@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 
-import { User } from "src/models/forum_user/user.entity";
+import { User } from "src/models/user/user.entity";
 
 import { JwtService } from "@nestjs/jwt";
 
@@ -22,6 +22,9 @@ export class UserService {
                 }
             });
             return{
+                success: true,
+                message: 'success get users data!',
+                error: false,
                 result: users,
             }
         } catch (err) {
@@ -57,6 +60,32 @@ export class UserService {
             return{
                 error: true,
                 message: 'Unable to get user detail',
+            }
+        }
+    }
+
+    async verifyEmail(payload: TokenPayload): Promise<any> {
+        try{
+            const user = await this.userRepository.findOne({
+                where: {
+                    user_id: payload.user_id,
+                }
+            })
+
+            if(user.is_active) return { success: false, message: 'User already verified' }
+
+            await this.userRepository.update({
+                is_active: true,
+                updated_at: new Date(),
+            }, {
+                where: {
+                    user_id: payload.user_id,
+                }
+            })
+        } catch(err){
+            return {
+                error: true,
+                message: 'Unable to verify email',
             }
         }
     }

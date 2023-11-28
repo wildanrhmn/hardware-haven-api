@@ -6,7 +6,7 @@ import { Table, Model, Column, PrimaryKey, Unique } from "sequelize-typescript";
     timestamps: false,
     indexes: [
         {
-            name: 'user_pkey',
+            name: 'user_pk',
             unique: true,
             fields: [{ name: 'user_id' }]
         },

@@ -6,7 +6,7 @@ import { UserService } from "./user.service";
 
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
-import { userProviders } from "src/models/forum_user/user.provider";
+import { userProviders } from "src/models/user/user.provider";
 
 @Module({
     imports:[

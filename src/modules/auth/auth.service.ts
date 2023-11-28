@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 
 import { sequelize } from "src/utility/seq-helper";
 
-import { User } from "src/models/forum_user/user.entity";
+import { User } from "src/models/user/user.entity";
 
 import {JwtService} from '@nestjs/jwt';
 

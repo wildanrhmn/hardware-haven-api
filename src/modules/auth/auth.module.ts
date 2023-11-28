@@ -5,7 +5,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 
-import { userProviders } from 'src/models/forum_user/user.provider';
+import { userProviders } from 'src/models/user/user.provider';
 @Module({
     imports: [
         PassportModule,

@@ -1,7 +1,7 @@
 import {SequelizeModuleOptions} from '@nestjs/sequelize';
 import {ConfigService} from '@nestjs/config';
 
-import { User } from 'src/models/forum_user/user.entity';
+import { User } from 'src/models/user/user.entity';
 
 export default (configService: ConfigService): SequelizeModuleOptions => ({
     dialect: 'postgres',
