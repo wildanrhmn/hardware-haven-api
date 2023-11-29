@@ -1,13 +1,15 @@
 import {Controller, Request, Get, HttpException, UseGuards, Post} from '@nestjs/common';
 import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController{
    constructor(private readonly userService: UserService) {}
    @Get('/')
+   @UseGuards(AuthGuard('admin-jwt'))
+   @ApiBearerAuth('Authorization')
    async getAllUsers(){
     const result = await this.userService.getAllUsers();
     
@@ -17,7 +19,7 @@ export class UserController{
       return result;
    }
 
-   @UseGuards(JwtAuthGuard)
+   @UseGuards(AuthGuard('common-user-jwt'))
    @ApiBearerAuth('Authorization')
    @Get('/user-detail')
    async getDetailUser(@Request() req: any ){
@@ -30,7 +32,7 @@ export class UserController{
       return result;
    }
 
-   @UseGuards(JwtAuthGuard)
+   @UseGuards(AuthGuard('common-user-jwt'))
    @ApiBearerAuth('Authorization')
    @Post('/verify-email')
    async userVerifyEmail(@Request() req: any){

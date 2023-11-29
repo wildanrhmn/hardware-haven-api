@@ -4,6 +4,7 @@ import {v4 as uuidv4} from 'uuid';
 import { sequelize } from "src/utility/seq-helper";
 
 import { User } from "src/models/user/user.entity";
+import { Admin } from "src/models/admin/admin.entity";
 
 import {JwtService} from '@nestjs/jwt';
 
@@ -11,6 +12,7 @@ import { crypt, decrypt } from "src/utility/auth-util";
 
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { LoginAdminDto } from "./dto/login.admin.dto";
 import { RefreshTokenDto } from "./dto/refresh.dto";
 import { ChangePasswordDto } from "./dto/change_password.dto";
 import { TokenPayload } from "src/types/token-payload";
@@ -20,6 +22,10 @@ export class AuthService{
     constructor(
         @Inject('USER_REPOSITORY')
         private userRepository: typeof User,
+
+        @Inject('ADMIN_REPOSITORY')
+        private adminRepository: typeof Admin,
+
         private readonly jwtService: JwtService,
     ){}
 
@@ -103,6 +109,58 @@ export class AuthService{
                 }
             )
             if(decrypt(user.password) !== payload.password){
+                return{
+                    message: 'Invalid password',
+                    error: true,
+                }
+            }
+            return{
+                result: {accessToken: accessToken, refreshToken: refreshToken},
+                message: 'Login Success.',
+            }
+        }catch(err){
+            return{
+                result: null,
+                error: err,
+                message: 'Failed to validate user',
+            }
+        }
+    }
+
+    async loginAdmin(payload: LoginAdminDto){
+        const admin = await this.adminRepository.findOne({
+            where: {
+                username: payload.username,
+            }
+        })
+        if(!admin){
+            return{
+                error: true,
+                message: 'Admin with specified username not found',
+            }
+        }
+        try{
+            const accessToken = this.jwtService.sign(
+                {
+                    id_admin: admin.id_admin,
+                    role: admin.role,
+                    iss: 'forum',
+                },
+                {
+                    expiresIn: process.env.JWT_EXPIRATION_TIME,
+                }
+            );
+            const refreshToken = this.jwtService.sign(
+                {
+                    id_admin: admin.id_admin,
+                    role: admin.role,
+                    iss: 'forum',
+                },
+                {
+                    expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME,
+                }
+            )
+            if(admin.password !== payload.password){
                 return{
                     message: 'Invalid password',
                     error: true,

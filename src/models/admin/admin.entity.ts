@@ -25,6 +25,9 @@ export class Admin extends Model{
     @Column
     password: string;
 
+    @Column
+    role: string;
+
     @HasMany(() => Article)
     articles: Article[];
 }

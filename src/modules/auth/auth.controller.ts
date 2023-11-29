@@ -4,9 +4,10 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger/dist/decorators";
 
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { LoginAdminDto } from "./dto/login.admin.dto";
 import { RefreshTokenDto } from "./dto/refresh.dto";
 import { ChangePasswordDto } from "./dto/change_password.dto";
-import { JwtAuthGuard } from "./jwt-auth.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags('auth')
 @Controller('auth')
@@ -15,6 +16,16 @@ export class AuthController{
     @Post('/login')
     async login(@Body() payload: LoginDto){
         const result = await this.authService.login(payload);
+
+        if (result.error) {
+            throw new HttpException(result.message, 400);
+          }
+        return result;
+    }
+
+    @Post('/login-admin')
+    async loginAdmin(@Body() payload: LoginAdminDto){
+        const result = await this.authService.loginAdmin(payload);
 
         if (result.error) {
             throw new HttpException(result.message, 400);
@@ -42,7 +53,7 @@ export class AuthController{
           return result;
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthGuard('common-user-jwt'))
     @ApiBearerAuth('Authorization')
     @Post('/change-password')
     async changePassword(@Request() req: any, @Body() payload: ChangePasswordDto){

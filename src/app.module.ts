@@ -9,10 +9,12 @@ import databaseConfig from 'database.config';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { HttpModule } from '@nestjs/axios';
 
 import { AuthController } from './modules/auth/auth.controller';
 import { UserController } from './modules/user/user.controller';
+import { AdminController } from './modules/admin/admin.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -28,8 +30,9 @@ import { UserController } from './modules/user/user.controller';
   AuthModule,
   HttpModule,
   UserModule,
+  AdminModule,
 ],
-  controllers: [AppController, AuthController, UserController],
+  controllers: [AppController, AuthController, UserController, AdminController],
   providers: [AppService],
 })
 export class AppModule {}
