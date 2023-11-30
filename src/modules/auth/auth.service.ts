@@ -160,7 +160,7 @@ export class AuthService{
                     expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME,
                 }
             )
-            if(admin.password !== payload.password){
+            if(decrypt(admin.password)   !== payload.password){
                 return{
                     message: 'Invalid password',
                     error: true,

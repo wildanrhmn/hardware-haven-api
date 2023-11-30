@@ -1,4 +1,4 @@
-import { Table, Model, Column, PrimaryKey, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Table, Model, Column, PrimaryKey, ForeignKey, BelongsTo, HasOne } from "sequelize-typescript";
 import { DataTypes } from "sequelize";
 import { Admin } from "../admin/admin.entity";
 
@@ -52,6 +52,7 @@ export class Article extends Model{
     @Column
     id_admin: string;
 
-    @BelongsTo(() => Admin)
-    admin: Admin;
+    @BelongsTo(() => Admin, {foreignKey: 'id_admin'})
+    author: Admin;
+
 }

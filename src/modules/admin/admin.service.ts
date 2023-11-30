@@ -5,8 +5,11 @@ import { sequelize } from "src/utility/seq-helper";
 import { crypt, decrypt } from "src/utility/auth-util";
 
 import { Admin } from "src/models/admin/admin.entity";
+import { Article } from "src/models/articles/article.entity";
 
 import { AdminTokenPayload } from "src/types/token-payload";
+
+import { CreateAdminDto } from "./dto/admin.dto";
 
 @Injectable()
 export class AdminService {
@@ -23,8 +26,23 @@ export class AdminService {
                 message: 'Unauthorized',
             }
         }
+
+        if(authToken.role !== 'super'){
+            return{
+                error: true,
+                status: 401,
+                message: 'Unauthorized',
+            }
+        }
         try {
-            const admin = await this.adminRepository.findAll()
+            const admin = await this.adminRepository.findAll({
+                attributes: {
+                    exclude: ['password']
+                },
+                include:[
+                    { model: Article, as: 'articles', attributes: {exclude: ['id_admin']}}
+                ]
+            })
 
             if (!admin) {
                 return {
@@ -64,11 +82,12 @@ export class AdminService {
         }
     }
 
-    async createAdmin(payload: Omit<Admin, 'id_admin'>, authToken: AdminTokenPayload): Promise<any> {
+    async createAdmin(payload: CreateAdminDto, authToken: AdminTokenPayload): Promise<any> {
         if (authToken.role !== 'super') {
             return {
                 error: true,
-                message: 'Only super admin can create admin',
+                status: 401,
+                message: 'Only super admin can create admin!',
             }
         }
 

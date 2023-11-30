@@ -2,8 +2,6 @@ import { Injectable, Inject } from "@nestjs/common";
 
 import { User } from "src/models/user/user.entity";
 
-import { JwtService } from "@nestjs/jwt";
-
 import { TokenPayload } from "src/types/token-payload";
 
 @Injectable()
@@ -11,7 +9,6 @@ export class UserService {
     constructor(
         @Inject('USER_REPOSITORY')
         private userRepository: typeof User,
-        private jwtService: JwtService,
     ) {}
 
     async getAllUsers(): Promise<any> {

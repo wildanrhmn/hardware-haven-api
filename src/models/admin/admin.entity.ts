@@ -6,7 +6,7 @@ import { Article } from "../articles/article.entity";
     timestamps: false,
     indexes: [
         {
-            name: 'admin_pkey',
+            name: 'admin_pk',
             unique: true,
             fields: [{ name: 'id_admin' }]
         },
@@ -28,6 +28,6 @@ export class Admin extends Model{
     @Column
     role: string;
 
-    @HasMany(() => Article)
+    @HasMany(() => Article, { as: 'articles' })
     articles: Article[];
 }
