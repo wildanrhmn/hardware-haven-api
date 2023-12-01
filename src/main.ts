@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { BaseResponseInterceptor } from './utility/interceptors/base-response.interceptor';
 import {v4 as uuidv4} from 'uuid';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import multipart from '@fastify/multipart'
 
 async function bootstrap() {
   try{
@@ -14,6 +15,7 @@ async function bootstrap() {
     app.enableCors({origin: '*'});
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     app.useGlobalInterceptors(new BaseResponseInterceptor());
+    app.register(multipart);
 
     const config = new DocumentBuilder()
     .setTitle('Hardware Haven API')
@@ -31,7 +33,7 @@ async function bootstrap() {
     )
     .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('api-docs', app, document);
     await app.listen(PORT, '0.0.0.0');
   }catch(err){
     console.error(err);

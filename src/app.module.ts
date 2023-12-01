@@ -12,6 +12,7 @@ import { UserModule } from './modules/user/user.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ArticleModule } from './modules/article/article.module';
 import { HttpModule } from '@nestjs/axios';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 import { AuthController } from './modules/auth/auth.controller';
 import { UserController } from './modules/user/user.controller';
@@ -34,6 +35,7 @@ import { ArticleController } from './modules/article/article.controller';
   UserModule,
   AdminModule,
   ArticleModule,
+  NestjsFormDataModule,
 ],
   controllers: [AppController, AuthController, UserController, AdminController, ArticleController],
   providers: [AppService],

@@ -34,9 +34,9 @@ export class Article extends Model{
     updated_at: Date;
 
     @Column({
-        type: DataTypes.ARRAY(DataTypes.STRING)
+        type: DataTypes.ARRAY(DataTypes.JSON)
     })
-    attachments: string[];
+    attachments: object[];
 
     @Column({
         type: DataTypes.ARRAY(DataTypes.STRING)
