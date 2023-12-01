@@ -39,7 +39,7 @@ export class EditArticleDto {
   description: string;
 
   @IsOptional()
-  @IsArray()
-  @ApiProperty({ type: [String] })
-  attachments?: string[];
+  @IsFiles()
+  @HasMimeType(['image/jpeg', 'image/png'], { each: true })
+  attachments?: FileSystemStoredFile[];
 }

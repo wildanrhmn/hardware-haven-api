@@ -24,8 +24,8 @@ export class ArticleService {
                 attributes: {
                     exclude: ['id_admin']
                 },
-                include:[
-                    { model: Admin, attributes: {exclude: ['password']}}
+                include: [
+                    { model: Admin, attributes: { exclude: ['password'] } }
                 ]
             });
             return {
@@ -45,7 +45,7 @@ export class ArticleService {
             return {
                 error: true,
                 status: 401,
-                message: 'Only moderator can create article',   
+                message: 'Only moderator can create article',
             }
         }
         const trx = await sequelize.transaction();
@@ -65,7 +65,7 @@ export class ArticleService {
                                     public_id: result.public_id
                                 });
                             }
-                        });        
+                        });
                         streamifier.createReadStream(attachment.buffer).pipe(upload_stream);
                     });
                 }));
@@ -93,7 +93,7 @@ export class ArticleService {
         }
     }
 
-    async editArticle(payload: EditArticleDto, authToken: AdminTokenPayload): Promise<any> {
+    async editArticle(payload: any, authToken: AdminTokenPayload): Promise<any> {
         if (authToken.role !== 'moderator') {
             return {
                 error: true,
@@ -102,5 +102,66 @@ export class ArticleService {
             }
         }
         const trx = await sequelize.transaction();
+
+        try {
+            const article = await this.articleRepository.findOne({
+                where: {
+                    id_article: payload.id_article
+                }
+            });
+
+            let new_attachments = [];
+
+            if(payload.attachments?.length > 0){
+                new_attachments = await Promise.all(payload.attachments.map((attachment) => {
+                    return new Promise((resolve, reject) => {
+                        let upload_stream = cloudinary.uploader.upload_stream((error, result) => {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                resolve({
+                                    url: result.url,
+                                    public_id: result.public_id
+                                });
+
+                                article.attachments.map((attachment: { public_id: string }) => {
+                                    if(attachment.public_id !== result.public_id){
+                                        cloudinary.uploader.destroy(attachment.public_id);
+                                    }
+                                });
+
+                            }
+                        });
+                        streamifier.createReadStream(attachment.buffer).pipe(upload_stream);
+                    });
+                }));
+            } else {
+                article.attachments.map((attachment: { public_id: string, url: string }) => {
+                    new_attachments.push({
+                        url: attachment.url,
+                        public_id: attachment.public_id
+                    })
+                })
+            }
+
+            await this.articleRepository.update({
+                title: payload.title,
+                description: payload.description,
+                attachments: new_attachments,
+                updated_at: new Date()
+            }, { where: { id_article: payload.id_article } });
+
+            await trx.commit();
+
+            return {
+                message: `Successfully edit article: ${payload.id_article}`,
+            }
+        } catch (err) {
+            await trx.rollback();
+            return {
+                error: true,
+                message: err,
+            }
+        }
     }
 }
