@@ -53,7 +53,7 @@ export class ArticleService {
             const uuid = uuidv4();
             let url_attachments = [];
 
-            if (payload.attachments.length > 0) {
+            if (payload.attachments?.length > 0) {
                 url_attachments = await Promise.all(payload.attachments.map((attachment) => {
                     return new Promise((resolve, reject) => {
                         let upload_stream = cloudinary.uploader.upload_stream((error, result) => {
