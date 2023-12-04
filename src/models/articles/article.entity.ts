@@ -1,7 +1,7 @@
-import { Table, Model, Column, PrimaryKey, ForeignKey, BelongsTo, HasOne } from "sequelize-typescript";
+import { Table, Model, Column, PrimaryKey, ForeignKey, BelongsTo, HasOne, HasMany } from "sequelize-typescript";
 import { DataTypes } from "sequelize";
 import { Admin } from "../admin/admin.entity";
-
+import { ArticleComment } from "../article_comments/articleComment.entity";
 
 @Table({
     tableName: 'articles',
@@ -43,16 +43,14 @@ export class Article extends Model{
     })
     likes: string[];
 
-    @Column({
-        type: DataTypes.ARRAY(DataTypes.JSON)
-    })
-    comments: object[];
-
     @ForeignKey(() => Admin)
     @Column
     id_admin: string;
 
     @BelongsTo(() => Admin, {foreignKey: 'id_admin'})
     author: Admin;
+
+    @HasMany(() => ArticleComment, {foreignKey: 'id_article', as: 'comments'})
+    comments: ArticleComment[];
 
 }

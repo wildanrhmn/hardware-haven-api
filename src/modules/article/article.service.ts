@@ -1,5 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { Article } from "src/models/articles/article.entity";
+import { ArticleComment } from '../../models/article_comments/articleComment.entity';
 
 import { sequelize } from "src/utility/seq-helper";
 import { DeleteArticleDto } from "./dto/article.dto";
@@ -15,7 +16,9 @@ const streamifier = require('streamifier');
 export class ArticleService {
     constructor(
         @Inject('ARTICLE_REPOSITORY')
-        private articleRepository: typeof Article
+        private articleRepository: typeof Article,
+        @Inject('ARTICLECOMMENT_REPOSITORY')
+        private articleCommentRepository: typeof ArticleComment
     ) { }
 
     async getAllArticles(): Promise<any> {
@@ -25,7 +28,8 @@ export class ArticleService {
                     exclude: ['id_admin']
                 },
                 include: [
-                    { model: Admin, attributes: { exclude: ['password'] } }
+                    { model: Admin, attributes: { exclude: ['password'] } },
+                    { model: ArticleComment }
                 ]
             });
             return {

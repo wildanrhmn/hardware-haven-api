@@ -4,6 +4,7 @@ import {ConfigService} from '@nestjs/config';
 import { User } from 'src/models/user/user.entity';
 import { Admin } from 'src/models/admin/admin.entity';
 import { Article } from 'src/models/articles/article.entity';
+import { ArticleComment } from 'src/models/article_comments/articleComment.entity';
 
 export default (configService: ConfigService): SequelizeModuleOptions => ({
     dialect: 'postgres',
@@ -12,5 +13,5 @@ export default (configService: ConfigService): SequelizeModuleOptions => ({
     database: configService.get<string>('database.database'),
     username: configService.get<string>('database.username'),
     password: configService.get<string>('database.password'),
-    models: [User, Admin, Article],
+    models: [User, Admin, Article, ArticleComment ],
   });
