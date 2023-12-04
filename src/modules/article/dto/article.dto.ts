@@ -43,3 +43,11 @@ export class EditArticleDto {
   @HasMimeType(['image/jpeg', 'image/png'], { each: true })
   attachments?: FileSystemStoredFile[];
 }
+
+export class DeleteArticleDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  id_article: string;
+}
+

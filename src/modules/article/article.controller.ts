@@ -5,7 +5,7 @@ import { ArticleService } from './article.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
-import { CreateArticleDto, EditArticleDto } from './dto/article.dto';
+import { CreateArticleDto, EditArticleDto, DeleteArticleDto } from './dto/article.dto';
 
 @ApiTags('article')
 @Controller('article')
@@ -45,6 +45,20 @@ export class ArticleController {
     async editArticle(@Body() payload: EditArticleDto, @Request() req: any): Promise<any> {
         const admin = req.user;
         const result = await this.articleService.editArticle(payload, admin);
+
+        if (result.error) {
+            throw new HttpException(result.message, result.status);
+          }
+          return result;
+    }
+
+    @Post('/delete')
+    @ApiBearerAuth('Authorization')
+    @UseGuards(AuthGuard('admin-jwt'))
+    @FormDataRequest()
+    async deleteArticle(@Body() payload: DeleteArticleDto, @Request() req: any): Promise<any> {
+        const admin = req.user;
+        const result = await this.articleService.deleteArticle(payload, admin);
 
         if (result.error) {
             throw new HttpException(result.message, result.status);

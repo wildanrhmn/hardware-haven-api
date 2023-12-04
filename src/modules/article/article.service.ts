@@ -2,7 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { Article } from "src/models/articles/article.entity";
 
 import { sequelize } from "src/utility/seq-helper";
-import { CreateArticleDto, EditArticleDto } from "./dto/article.dto";
+import { DeleteArticleDto } from "./dto/article.dto";
 import { AdminTokenPayload } from "src/types/token-payload";
 
 import { v4 as uuidv4 } from 'uuid';
@@ -162,6 +162,43 @@ export class ArticleService {
                 error: true,
                 message: err,
             }
+        }
+    }
+
+    async deleteArticle (payload: DeleteArticleDto, authToken: AdminTokenPayload): Promise<any> {
+        if (authToken.role !== 'moderator') {
+            return {
+                error: true,
+                status: 401,
+                message: 'Only moderator can delete article',
+            }
+        }
+        const article = await this.articleRepository.findOne({
+            where: {
+                id_article: payload.id_article
+            }
+        })
+
+        if(!article){
+            return {
+                error: true,
+                status: 404,
+                message: 'Article not found',
+            }
+        }
+
+        article.attachments.map((attachment: { public_id: string }) => {
+            cloudinary.uploader.destroy(attachment.public_id);
+        })
+
+        await this.articleRepository.destroy({
+            where: {
+                id_article: payload.id_article
+            }
+        })
+
+        return {
+            message: `Successfully delete article: ${payload.id_article}`,
         }
     }
 }
