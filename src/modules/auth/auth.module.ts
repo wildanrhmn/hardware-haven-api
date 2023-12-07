@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 import { userProviders } from 'src/models/user/user.provider';
 import { adminProviders } from 'src/models/admin/admin.provider';
 
-import { CommonUserJwtStrategy, AdminJwtStrategy } from './jwt.strategy';
+import { CommonUserJwtStrategy, AdminJwtStrategy, CombinedJwtStrategy } from './jwt.strategy';
 @Module({
     imports: [
         PassportModule,
@@ -22,7 +22,7 @@ import { CommonUserJwtStrategy, AdminJwtStrategy } from './jwt.strategy';
             },
         }),
     ],
-    providers: [AuthService, CommonUserJwtStrategy, AdminJwtStrategy, ...userProviders, ...adminProviders ],
-    exports: [AuthService, CommonUserJwtStrategy, AdminJwtStrategy],
+    providers: [AuthService, CommonUserJwtStrategy, AdminJwtStrategy,CombinedJwtStrategy, ...userProviders, ...adminProviders ],
+    exports: [AuthService, CommonUserJwtStrategy, AdminJwtStrategy, CombinedJwtStrategy],
 })
 export class AuthModule{}

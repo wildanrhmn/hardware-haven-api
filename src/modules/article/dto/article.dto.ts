@@ -51,3 +51,34 @@ export class DeleteArticleDto {
   id_article: string;
 }
 
+export class CommentArticleDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  id_article: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  content: string;
+}
+
+export class EditCommentArticleDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  id_comment: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  content: string;
+
+}
+export class DeleteCommentArticleDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  id_comment: string;
+}
+

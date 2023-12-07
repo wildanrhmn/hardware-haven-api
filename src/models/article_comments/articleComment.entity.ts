@@ -1,5 +1,7 @@
 import { Table, Model, Column, PrimaryKey, ForeignKey, BelongsTo } from "sequelize-typescript";
+
 import { Article } from "../articles/article.entity";
+import { Admin } from "../admin/admin.entity";
 import { User } from "../user/user.entity";
 
 @Table({
@@ -37,6 +39,14 @@ export class ArticleComment extends Model{
     @Column
     user_id: string;
 
+    @ForeignKey(() => Admin)
+    @Column
+    id_admin: string;
+
     @BelongsTo(() => User, {foreignKey: 'user_id'})
     user: User;
+
+    @BelongsTo(() => Admin, { foreignKey: 'id_admin' })
+    admin: Admin;
+
 }
